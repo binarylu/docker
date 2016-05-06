@@ -1,0 +1,59 @@
+server {
+    listen 80;
+    location ~* \.php$ {
+        root /usr/share/nginx/html;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param SERVER_NAME $http_host;
+    }
+
+    location / {
+        root  /usr/share/nginx/html;
+        index index.html index.htm index.php;
+# if the requested file exists, return it immediately
+        if (-f $request_filename) {
+            break;
+        }
+
+        set $supercache_file '';
+        set $supercache_uri $request_uri;
+
+        if ($request_method = POST) {
+            set $supercache_uri '';
+        }
+
+# Using pretty permalinks, so bypass the cache for any query string
+        if ($query_string) {
+            set $supercache_uri '';
+        }
+
+        if ($http_cookie ~* "comment_author_|wordpress|wp-postpass_" ) {
+            set $supercache_uri '';
+        }
+
+# if we haven't bypassed the cache, specify our supercache file
+        if ($supercache_uri ~ ^(.+)$) {
+            set $supercache_file /wp-content/cache/supercache/$http_host/$1index.html;
+        }
+
+# only rewrite to the supercache file if it actually exists
+        if (-f $document_root$supercache_file) {
+            rewrite ^(.*)$ $supercache_file break;
+        }
+
+# all other requests go to WordPress
+        if (!-e $request_filename) {
+            rewrite . /index.php last;
+        }
+    }
+
+    error_page  404              /404.html;
+    error_page  403              /403.html;
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html { 
+    	root /usr/share/nginx/html;
+    }
+}
