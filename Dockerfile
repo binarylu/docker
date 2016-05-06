@@ -32,6 +32,7 @@ RUN chown -R nginx:www-data /var/lib/nginx
 ADD files/nginx.conf /etc/nginx/nginx.conf
 ADD files/default.nginx /etc/nginx/conf.d/default.nginx
 ADD files/php-fpm.conf /etc/php/php-fpm.conf
+ADD files/php.ini /etc/php/php.ini
 
 EXPOSE 80
 VOLUME "/usr/share/nginx/"
