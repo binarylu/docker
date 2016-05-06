@@ -5,8 +5,12 @@ RUN apk add --no-cache \
         bash \
         nginx \
         ca-certificates \
+        php-ctype \
+        php-curl \
+        php-bcmath \
         php-fpm \
         php-gd \
+        php-gettext \
         php-iconv \
         php-json \
         php-mysqli \
@@ -15,7 +19,9 @@ RUN apk add --no-cache \
         php-pdo \
         php-pdo_mysql \
         php-phar \
+        php-sockets \
         php-xml \
+        php-xmlreader \
         php-zlib
 
 ADD files/run.sh /run.sh
